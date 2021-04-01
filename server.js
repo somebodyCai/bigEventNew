@@ -10,7 +10,7 @@ server.use(cors())
 
 
 // 2.2静态资源托管
-server.use('/uploads',express.static('uploads'))
+server.use('/uploads', express.static('uploads'))
 
 // 2.3 token 值 验证
 const jwt = require('express-jwt');
@@ -26,27 +26,32 @@ server.use(jwt({
 
 
 
-// 2.4引入路由中间件  
+// 2.4.1   引入路由中间件  (后台接口路由)
 const api_log = require('./api/api_login.js')
 const myUser = require('./my/user.js')
 const art_router = require('./my/article/art_router.js')
+// 2.4.2引入前台接口路由中间件
+const index_air = require('./index/index_air.js')
+
 
 // 2.5使用路由中间件
 server.use('/api', api_log)
 server.use('/my', myUser)
 server.use('/my/article', art_router)
+server.use('/index', index_air)
+
 
 
 // 2.6 token 错误捕捉
 server.use((err, req, res, next) => {
-    console.log('有错误', err)
-    if (err.name === 'UnauthorizedError') {
-      // res.status(401).send('invalid token...');
-      res.status(401).send({ code: 1, message: '身份认证失败！' });
-    }
-  });
+  console.log('有错误', err)
+  if (err.name === 'UnauthorizedError') {
+    // res.status(401).send('invalid token...');
+    res.status(401).send({ code: 1, message: '身份认证失败！' });
+  }
+});
 
 // 3.开启服务器
 server.listen(8808, () => {
-    console.log('服务器已在8808端口开启');
+  console.log('服务器已在8808端口开启');
 })
